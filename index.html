@@ -1,1 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samosa Sales Calculator</title>
 
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    max-width:600px;
+    margin:auto;
+    padding:15px;
+    background:#f4f4f4;
+}
+
+h1,h2{
+    text-align:center;
+}
+
+.item{
+    background:white;
+    padding:15px;
+    margin-bottom:10px;
+    border-radius:10px;
+    box-shadow:0 2px 4px rgba(0,0,0,0.1);
+}
+
+.row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.controls{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.qty{
+    font-size:24px;
+    min-width:40px;
+    text-align:center;
+}
+
+button{
+    cursor:pointer;
+    border:none;
+}
+
+.plus{
+    background:#27ae60;
+    color:white;
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    font-size:26px;
+}
+
+.minus{
+    background:#e74c3c;
+    color:white;
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    font-size:26px;
+}
+
+.total{
+    background:#2c3e50;
+    color:white;
+    text-align:center;
+    padding:20px;
+    border-radius:10px;
+    font-size:32px;
+    margin:15px 0;
+}
+
+.notes{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+}
+
+.note-btn{
+    background:#3498db;
+    color:white;
+    padding:15px;
+    font-size:22px;
+    border-radius:10px;
+}
+
+input{
+    width:100%;
+    padding:15px;
+    font-size:20px;
+    box-sizing:border-box;
+    margin:10px 0;
+    border-radius:10px;
+    border:1px solid #ccc;
+}
+
+.change{
+    background:white;
+    padding:15px;
+    border-radius:10px;
+    text-align:center;
+    font-size:28px;
+    margin-bottom:10px;
+}
+
+.action-btn{
+    width:100%;
+    padding:15px;
+    color:white;
+    border-radius:10px;
+    margin-top:10px;
+    font-size:18px;
+}
+
+.sale{
+    background:#27ae60;
+}
+
+.clear{
+    background:#34495e;
+}
+
+.reset{
+    background:#e74c3c;
+}
+
+.summary{
+    background:white;
+    padding:15px;
+    border-radius:10px;
+    margin-top:15px;
+}
+
+.summary-row{
+    display:flex;
+    justify-content:space-between;
+    margin:10px 0;
+    font-size:18px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>🥟 Samosa Sales Calculator</h1>
+
+<div class="item">
+<div class="row">
+<div>
+<strong>Veg Samosa</strong><br>
+£1.00
+</div>
+<div class="controls">
+<button class="minus" onclick="changeQty('veg',-1)">−</button>
+<span class="qty" id="veg">0</span>
+<button class="plus" onclick="changeQty('veg',1)">+</button>
+</div>
+</div>
+</div>
+
+<div class="item">
+<div class="row">
+<div>
+<strong>Meat Samosa</strong><br>
+£1.80
+</div>
+
+<div class="controls">
+<button class="minus" onclick="changeQty('meat',-1)">−</button>
+<span class="qty" id="meat">0</span>
+<button class="plus" onclick="changeQty('meat',1)">+</button>
+</div>
+</div>
+</div>
+
+<div class="item">
+<div class="row">
+<div>
+<strong>Samosa Chaat</strong><br>
+£5.00
+</div>
+
+<div class="controls">
+<button class="minus" onclick="changeQty('chaat',-1)">−</button>
+<span class="qty" id="chaat">0</span>
+<button class="plus" onclick="changeQty('chaat',1)">+</button>
+</div>
+</div>
+</div>
+
+<div class="total">
+£<span id="total">0.00</span>
+</div>
+
+<h2>Payment</h2>
+
+<div class="notes">
+<button class="note-btn" onclick="setPayment(5)">£5</button>
+<button class="note-btn" onclick="setPayment(10)">£10</button>
+<button class="note-btn" onclick="setPayment(20)">£20</button>
+<button class="note-btn" onclick="setPayment(50)">£50</button>
+</div>
+
+<input
+id="paymentAmount"
+type="number"
+step="0.01"
+placeholder="Enter amount paid (£)"
+oninput="calculateChange()">
+
+<div class="change">
+Change: £<span id="change">0.00</span>
+</div>
+
+<button class="action-btn sale" onclick="completeSale()">
+Complete Sale
+</button>
+
+<button class="action-btn clear" onclick="resetOrder()">
+Clear Current Order
+</button>
+
+<h2>📊 Today's Event Summary</h2>
+
+<div class="summary">
+
+<div class="summary-row">
+<span>Total Sales</span>
+<strong id="salesCount">0</strong>
+</div>
+
+<div class="summary-row">
+<span>Total Takings</span>
+<strong>£<span id="dailyTakings">0.00</span></strong>
+</div>
+
+<div class="summary-row">
+<span>Estimated Profit</span>
+<strong>£<span id="dailyProfit">0.00</span></strong>
+</div>
+
+</div>
+
+<button class="action-btn reset" onclick="resetDailyTotals()">
+Reset Daily Totals
+</button>
+
+<script>
+
+// SELLING PRICES
+
+const prices = {
+    veg:1.00,
+    meat:1.80,
+    chaat:5.00
+};
+
+// COST PRICES (EDIT THESE)
+
+const costs = {
+    veg:0.30,
+    meat:0.70,
+    chaat:1.80
+};
+
+let salesCount = 0;
+let dailyTakings = 0;
+let dailyProfit = 0;
+
+function changeQty(item, amount){
+
+    let element = document.getElementById(item);
+
+    let qty = parseInt(element.textContent);
+
+    qty += amount;
+
+    if(qty < 0){
+        qty = 0;
+    }
+
+    element.textContent = qty;
+
+    updateTotal();
+}
+
+function getQty(item){
+    return parseInt(document.getElementById(item).textContent);
+}
+
+function getOrderTotal(){
+
+    return (
+        getQty("veg") * prices.veg +
+        getQty("meat") * prices.meat +
+        getQty("chaat") * prices.chaat
+    );
+}
+
+function getOrderCost(){
+
+    return (
+        getQty("veg") * costs.veg +
+        getQty("meat") * costs.meat +
+        getQty("chaat") * costs.chaat
+    );
+}
+
+function updateTotal(){
+
+    document.getElementById("total").textContent =
+        getOrderTotal().toFixed(2);
+
+    calculateChange();
+}
+
+function setPayment(amount){
+
+    document.getElementById("paymentAmount").value = amount;
+
+    calculateChange();
+}
+
+function calculateChange(){
+
+    let paid =
+        parseFloat(document.getElementById("paymentAmount").value) || 0;
+
+    let total = getOrderTotal();
+
+    let change = paid - total;
+
+    document.getElementById("change").textContent =
+        change.toFixed(2);
+}
+
+function completeSale(){
+
+    let total = getOrderTotal();
+
+    if(total <= 0){
+        alert("Please add items first.");
+        return;
+    }
+
+    let paid =
+        parseFloat(document.getElementById("paymentAmount").value) || 0;
+
+    if(paid < total){
+        alert("Customer has not paid enough.");
+        return;
+    }
+
+    let profit = total - getOrderCost();
+
+    salesCount++;
+    dailyTakings += total;
+    dailyProfit += profit;
+
+    updateSummary();
+
+    saveData();
+
+    alert("Sale Completed!");
+
+    resetOrder();
+}
+
+function updateSummary(){
+
+    document.getElementById("salesCount").textContent =
+        salesCount;
+
+    document.getElementById("dailyTakings").textContent =
+        dailyTakings.toFixed(2);
+
+    document.getElementById("dailyProfit").textContent =
+        dailyProfit.toFixed(2);
+}
+
+function resetOrder(){
+
+    document.getElementById("veg").textContent = 0;
+    document.getElementById("meat").textContent = 0;
+    document.getElementById("chaat").textContent = 0;
+
+    document.getElementById("paymentAmount").value = "";
+
+    document.getElementById("total").textContent = "0.00";
+    document.getElementById("change").textContent = "0.00";
+}
+
+function resetDailyTotals(){
+
+    if(confirm("Reset all daily totals?")){
+
+        salesCount = 0;
+        dailyTakings = 0;
+        dailyProfit = 0;
+
+        updateSummary();
+
+        saveData();
+    }
+}
+
+function saveData(){
+
+    localStorage.setItem(
+        "samosaData",
+        JSON.stringify({
+            salesCount,
+            dailyTakings,
+            dailyProfit
+        })
+    );
+}
+
+function loadData(){
+
+    let data =
+        JSON.parse(localStorage.getItem("samosaData"));
+
+    if(data){
+
+        salesCount = data.salesCount || 0;
+        dailyTakings = data.dailyTakings || 0;
+        dailyProfit = data.dailyProfit || 0;
+
+        updateSummary();
+    }
+}
+
+window.onload = loadData;
+
+</script>
+
+</body>
+</html>
+``
