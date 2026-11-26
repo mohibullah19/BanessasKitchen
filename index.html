@@ -267,16 +267,61 @@ Clear Current Order
 <h2>📊 Today's Event Summary</h2>
 
 <div class="summary">
-<div class="summary-row">
-<span>Total Sales</span>
-<strong id="salesCount">0</strong>
+
+    <div class="summary-row">
+        <span>Total Sales</span>
+        <strong id="salesCount">0</strong>
+    </div>
+
+    <div class="summary-row">
+        <span>Total Takings</span>
+        <strong>£<span id="dailyTakings">0.00</span></strong>
+    </div>
+
+    <hr>
+
+    <h3>Items Sold</h3>
+
+    <div class="summary-row">
+        <span>Veg Samosa</span>
+        <strong id="vegSold">0</strong>
+    </div>
+
+    <div class="summary-row">
+        <span>Bitesize Chicken Tandoori Samosa</span>
+        <strong id="chickenTandooriSold">0</strong>
+    </div>
+
+    <div class="summary-row">
+        <span>Meat Samosa</span>
+        <strong id="meatSold">0</strong>
+    </div>
+
+    <div class="summary-row">
+        <span>Samosa Chaat</span>
+        <strong id="chaatSold">0</strong>
+    </div>
+
+    <div class="summary-row">
+        <span>Morcha Handesh</span>
+        <strong id="morchaHandeshSold">0</strong>
+    </div>
+
+    <div class="summary-row">
+        <span>Cinnamon Handesh</span>
+        <strong id="cinnamonHandeshSold">0</strong>
+    </div>
+
+    <div class="summary-row">
+        <span>Chocolate Fob</span>
+        <strong id="chocolateFobSold">0</strong>
+    </div>
+
 </div>
 
-<div class="summary-row">
-<span>Total Takings</span>
-<strong>£<span id="dailyTakings">0.00</span></strong>
-</div>
-</div>
+<button class="action-btn sale" onclick="exportSalesReport()">
+📥 Export Sales Report
+</button>
 
 <button class="action-btn reset" onclick="resetDailyTotals()">
 Reset Daily Totals
@@ -307,6 +352,16 @@ const costs = {
 let salesCount = 0;
 let dailyTakings = 0;
 let dailyProfit = 0;
+
+let itemSales = {
+    veg:0,
+    chickenTandoori:0,
+    meat:0,
+    chaat:0,
+    morchaHandesh:0,
+    cinnamonHandesh:0,
+    chocolateFob:0
+};
 
 function changeQty(item, amount){
     let element = document.getElementById(item);
@@ -395,6 +450,14 @@ function completeSale(){
     dailyTakings += total;
     dailyProfit += profit;
 
+    itemSales.veg += getQty("veg");
+    itemSales.chickenTandoori += getQty("chickenTandoori");
+    itemSales.meat += getQty("meat");
+    itemSales.chaat += getQty("chaat");
+    itemSales.morchaHandesh += getQty("morchaHandesh");
+    itemSales.cinnamonHandesh += getQty("cinnamonHandesh");
+    itemSales.chocolateFob += getQty("chocolateFob");
+
     updateSummary();
     saveData();
 
@@ -404,11 +467,33 @@ function completeSale(){
 }
 
 function updateSummary(){
+
     document.getElementById("salesCount").textContent =
         salesCount;
 
     document.getElementById("dailyTakings").textContent =
         dailyTakings.toFixed(2);
+
+    document.getElementById("vegSold").textContent =
+        itemSales.veg;
+
+    document.getElementById("chickenTandooriSold").textContent =
+        itemSales.chickenTandoori;
+
+    document.getElementById("meatSold").textContent =
+        itemSales.meat;
+
+    document.getElementById("chaatSold").textContent =
+        itemSales.chaat;
+
+    document.getElementById("morchaHandeshSold").textContent =
+        itemSales.morchaHandesh;
+
+    document.getElementById("cinnamonHandeshSold").textContent =
+        itemSales.cinnamonHandesh;
+
+    document.getElementById("chocolateFobSold").textContent =
+        itemSales.chocolateFob;
 }
 
 function resetOrder(){
@@ -434,6 +519,16 @@ function resetDailyTotals(){
         dailyTakings = 0;
         dailyProfit = 0;
 
+        itemSales = {
+            veg:0,
+            chickenTandoori:0,
+            meat:0,
+            chaat:0,
+            morchaHandesh:0,
+            cinnamonHandesh:0,
+            chocolateFob:0
+        };
+
         updateSummary();
         saveData();
     }
@@ -446,7 +541,8 @@ function saveData(){
         JSON.stringify({
             salesCount,
             dailyTakings,
-            dailyProfit
+            dailyProfit,
+            itemSales
         })
     );
 }
@@ -462,10 +558,63 @@ function loadData(){
         dailyTakings = data.dailyTakings || 0;
         dailyProfit = data.dailyProfit || 0;
 
+        itemSales = data.itemSales || {
+            veg:0,
+            chickenTandoori:0,
+            meat:0,
+            chaat:0,
+            morchaHandesh:0,
+            cinnamonHandesh:0,
+            chocolateFob:0
+        };
+
         updateSummary();
     }
 }
 
+function exportSalesReport(){
+
+    const date =
+        new Date().toLocaleString();
+
+    let csv =
+`Banessas Kitchen Sales Report
+
+Report Generated,${date}
+
+Total Sales,${salesCount}
+Total Takings,£${dailyTakings.toFixed(2)}
+
+Item,Quantity Sold
+Veg Samosa,${itemSales.veg}
+Bitesize Chicken Tandoori Samosa,${itemSales.chickenTandoori}
+Meat Samosa,${itemSales.meat}
+Samosa Chaat,${itemSales.chaat}
+Morcha Handesh,${itemSales.morchaHandesh}
+Cinnamon Handesh,${itemSales.cinnamonHandesh}
+Chocolate Fob,${itemSales.chocolateFob}
+`;
+
+    const blob =
+        new Blob([csv], {
+            type:"text/csv;charset=utf-8;"
+        });
+
+    const link =
+        document.createElement("a");
+
+    const url =
+        URL.createObjectURL(blob);
+
+    link.href = url;
+    link.download =
+        "BanessasKitchenSalesReport.csv";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+  
 window.onload = loadData;
 
 </script>
