@@ -7,615 +7,542 @@
 
 <style>
 body{
-    font-family:Arial,sans-serif;
-    max-width:600px;
-    margin:auto;
-    padding:15px;
-    background:#f4f4f4;
+    font-family: Arial, sans-serif;
+    max-width:1200px;
+    margin:20px auto;
+    padding:20px;
+    background:#f5f5f5;
 }
-h1,h2{
+
+h1{
     text-align:center;
+    color:#333;
 }
-.item{
+
+.section{
     background:white;
-    padding:15px;
-    margin-bottom:10px;
-    border-radius:10px;
-    box-shadow:0 2px 4px rgba(0,0,0,0.1);
-}
-.row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-.controls{
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-.qty{
-    font-size:24px;
-    min-width:40px;
-    text-align:center;
-}
-button{
-    cursor:pointer;
-    border:none;
-}
-.plus{
-    background:#27ae60;
-    color:white;
-    width:50px;
-    height:50px;
-    border-radius:50%;
-    font-size:26px;
-}
-.minus{
-    background:#e74c3c;
-    color:white;
-    width:50px;
-    height:50px;
-    border-radius:50%;
-    font-size:26px;
-}
-.total{
-    background:#2c3e50;
-    color:white;
-    text-align:center;
     padding:20px;
     border-radius:10px;
-    font-size:32px;
-    margin:15px 0;
+    margin-bottom:20px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
 }
-.notes{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
-}
-.note-btn{
-    background:#3498db;
-    color:white;
-    padding:15px;
-    font-size:22px;
-    border-radius:10px;
-}
-input{
-    width:100%;
-    padding:15px;
-    font-size:20px;
-    box-sizing:border-box;
-    margin:10px 0;
-    border-radius:10px;
-    border:1px solid #ccc;
-}
-.change{
-    background:white;
-    padding:15px;
-    border-radius:10px;
-    text-align:center;
-    font-size:28px;
-    margin-bottom:10px;
-}
-.action-btn{
-    width:100%;
-    padding:15px;
-    color:white;
-    border-radius:10px;
-    margin-top:10px;
-    font-size:18px;
-}
-.sale{
-    background:#27ae60;
-}
-.clear{
-    background:#34495e;
-}
-.reset{
-    background:#e74c3c;
-}
-.summary{
-    background:white;
-    padding:15px;
-    border-radius:10px;
-    margin-top:15px;
-}
-.summary-row{
+
+.menu-item{
     display:flex;
     justify-content:space-between;
-    margin:10px 0;
-    font-size:18px;
+    align-items:center;
+    padding:10px;
+    margin:8px 0;
+    border:1px solid #ddd;
+    border-radius:8px;
+}
+
+.qty-controls{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+button{
+    border:none;
+    border-radius:6px;
+    padding:8px 12px;
+    cursor:pointer;
+}
+
+.plus{
+    background:#28a745;
+    color:white;
+}
+
+.minus{
+    background:#dc3545;
+    color:white;
+}
+
+.delete-btn{
+    background:#dc3545;
+    color:white;
+}
+
+.edit-btn{
+    background:#ffc107;
+}
+
+.action-btn{
+    background:#007bff;
+    color:white;
+    margin:5px;
+}
+
+.total{
+    font-size:24px;
+    font-weight:bold;
+    text-align:center;
+    margin:15px 0;
+}
+
+input{
+    padding:8px;
+    margin:5px;
+}
+
+.summary-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:10px;
+}
+
+.item-sales{
+    padding:5px 0;
 }
 </style>
 </head>
-
 <body>
 
-<img src="Designer (11).png" style="max-width:100%; height:auto;">
+<h1>Banessas Kitchen Event Sales Calculator</h1>
 
-<h1>Banessas Kitchen<br>Event Sales Calculator</h1>
+<div class="section">
 
-<div class="item">
-<div class="row">
-<div>
-<strong>Veg Samosa</strong><br>
-£1.00
-</div>
-<div class="controls">
-<button class="minus" onclick="changeQty('veg',-1)">−</button>
-<span class="qty" id="veg">0</span>
-<button class="plus" onclick="changeQty('veg',1)">+</button>
-</div>
-</div>
+<h2>🔧 Manage Items</h2>
+
+<input id="newItemName" placeholder="Item Name">
+<input id="newItemPrice" type="number" step="0.01" placeholder="Price (£)">
+<button class="action-btn" onclick="addItem()">Add Item</button>
+
 </div>
 
-<div class="item">
-<div class="row">
-<div>
-<strong>Bitesize Chicken Tandoori Samosa</strong><br>
-£1.00
-</div>
-<div class="controls">
-<button class="minus" onclick="changeQty('chickenTandoori',-1)">−</button>
-<span class="qty" id="chickenTandoori">0</span>
-<button class="plus" onclick="changeQty('chickenTandoori',1)">+</button>
-</div>
-</div>
+<div class="section">
+
+<h2>Menu</h2>
+
+<div id="menuContainer"></div>
+
 </div>
 
-<div class="item">
-<div class="row">
-<div>
-<strong>Meat Samosa</strong><br>
-£1.80
-</div>
-<div class="controls">
-<button class="minus" onclick="changeQty('meat',-1)">−</button>
-<span class="qty" id="meat">0</span>
-<button class="plus" onclick="changeQty('meat',1)">+</button>
-</div>
-</div>
-</div>
-
-<div class="item">
-<div class="row">
-<div>
-<strong>Samosa Chaat</strong><br>
-£5.00
-</div>
-<div class="controls">
-<button class="minus" onclick="changeQty('chaat',-1)">−</button>
-<span class="qty" id="chaat">0</span>
-<button class="plus" onclick="changeQty('chaat',1)">+</button>
-</div>
-</div>
-</div>
-
-<div class="item">
-<div class="row">
-<div>
-<strong>Morcha Handesh</strong><br>
-£1.00
-</div>
-<div class="controls">
-<button class="minus" onclick="changeQty('morchaHandesh',-1)">−</button>
-<span class="qty" id="morchaHandesh">0</span>
-<button class="plus" onclick="changeQty('morchaHandesh',1)">+</button>
-</div>
-</div>
-</div>
-
-<div class="item">
-<div class="row">
-<div>
-<strong>Cinnamon Handesh</strong><br>
-£1.00
-</div>
-<div class="controls">
-<button class="minus" onclick="changeQty('cinnamonHandesh',-1)">−</button>
-<span class="qty" id="cinnamonHandesh">0</span>
-<button class="plus" onclick="changeQty('cinnamonHandesh',1)">+</button>
-</div>
-</div>
-</div>
-
-<div class="item">
-<div class="row">
-<div>
-<strong>Chocolate Fob</strong><br>
-£1.00
-</div>
-<div class="controls">
-<button class="minus" onclick="changeQty('chocolateFob',-1)">−</button>
-<span class="qty" id="chocolateFob">0</span>
-<button class="plus" onclick="changeQty('chocolateFob',1)">+</button>
-</div>
-</div>
-</div>
+<div class="section">
 
 <div class="total">
-£<span id="total">0.00</span>
+£ <span id="orderTotal">0.00</span>
 </div>
 
-<h2>Payment</h2>
+<h3>Payment</h3>
 
-<div class="notes">
-<button class="note-btn" onclick="setPayment(5)">£5</button>
-<button class="note-btn" onclick="setPayment(10)">£10</button>
-<button class="note-btn" onclick="setPayment(20)">£20</button>
-<button class="note-btn" onclick="setPayment(50)">£50</button>
-</div>
+<button class="action-btn" onclick="setPayment(5)">£5</button>
+<button class="action-btn" onclick="setPayment(10)">£10</button>
+<button class="action-btn" onclick="setPayment(20)">£20</button>
+<button class="action-btn" onclick="setPayment(50)">£50</button>
+
+<br><br>
 
 <input
-id="paymentAmount"
 type="number"
+id="paymentAmount"
 step="0.01"
 placeholder="Enter amount paid (£)"
-oninput="calculateChange()">
+oninput="calculateChange()"
+>
 
-<div class="change">
-Change: £<span id="change">0.00</span>
-</div>
+<h3>
+Change: £ <span id="change">0.00</span>
+</h3>
 
-<button class="action-btn sale" onclick="completeSale()">
+<button class="action-btn" onclick="completeSale()">
 Complete Sale
 </button>
 
-<button class="action-btn clear" onclick="resetOrder()">
+<button class="action-btn" onclick="clearCurrentOrder()">
 Clear Current Order
 </button>
 
+</div>
+
+<div class="section">
+
 <h2>📊 Today's Event Summary</h2>
 
-<div class="summary">
+<div class="summary-grid">
 
-    <div class="summary-row">
-        <span>Total Sales</span>
-        <strong id="salesCount">0</strong>
-    </div>
+<div>
+<h3>Total Sales</h3>
+<div id="salesCount">0</div>
+</div>
 
-    <div class="summary-row">
-        <span>Total Takings</span>
-        <strong>£<span id="dailyTakings">0.00</span></strong>
-    </div>
-
-    <hr>
-
-    <h3>Items Sold</h3>
-
-    <div class="summary-row">
-        <span>Veg Samosa</span>
-        <strong id="vegSold">0</strong>
-    </div>
-
-    <div class="summary-row">
-        <span>Bitesize Chicken Tandoori Samosa</span>
-        <strong id="chickenTandooriSold">0</strong>
-    </div>
-
-    <div class="summary-row">
-        <span>Meat Samosa</span>
-        <strong id="meatSold">0</strong>
-    </div>
-
-    <div class="summary-row">
-        <span>Samosa Chaat</span>
-        <strong id="chaatSold">0</strong>
-    </div>
-
-    <div class="summary-row">
-        <span>Morcha Handesh</span>
-        <strong id="morchaHandeshSold">0</strong>
-    </div>
-
-    <div class="summary-row">
-        <span>Cinnamon Handesh</span>
-        <strong id="cinnamonHandeshSold">0</strong>
-    </div>
-
-    <div class="summary-row">
-        <span>Chocolate Fob</span>
-        <strong id="chocolateFobSold">0</strong>
-    </div>
+<div>
+<h3>Total Takings</h3>
+<div>£ <span id="totalTakings">0.00</span></div>
+</div>
 
 </div>
 
-<button class="action-btn sale" onclick="exportSalesReport()">
+<h3>Items Sold</h3>
+
+<div id="salesBreakdown"></div>
+
+<br>
+
+<button class="action-btn" onclick="exportReport()">
 📥 Export Sales Report
 </button>
 
-<button class="action-btn reset" onclick="resetDailyTotals()">
+<button class="action-btn" onclick="resetDailyTotals()">
 Reset Daily Totals
 </button>
 
+</div>
+
 <script>
 
-const prices = {
-    veg:1.00,
-    chickenTandoori:1.00,
-    meat:1.80,
-    chaat:5.00,
-    morchaHandesh:1.00,
-    cinnamonHandesh:1.00,
-    chocolateFob:1.00
-};
+let menuItems =
+JSON.parse(localStorage.getItem('menuItems')) || [
+    {name:"Veg Samosa", price:1.00},
+    {name:"Bitesize Chicken Tandoori Samosa", price:1.00},
+    {name:"Meat Samosa", price:1.80},
+    {name:"Samosa Chaat", price:5.00},
+    {name:"Morcha Handesh", price:1.00},
+    {name:"Cinnamon Handesh", price:1.00},
+    {name:"Chocolate Fob", price:1.00}
+];
 
-const costs = {
-    veg:0.30,
-    chickenTandoori:0.30,
-    meat:0.70,
-    chaat:1.80,
-    morchaHandesh:0.30,
-    cinnamonHandesh:0.30,
-    chocolateFob:0.30
-};
+let currentOrder = {};
+let totalSales =
+parseInt(localStorage.getItem('totalSales')) || 0;
 
-let salesCount = 0;
-let dailyTakings = 0;
-let dailyProfit = 0;
+let totalTakings =
+parseFloat(localStorage.getItem('totalTakings')) || 0;
 
-let itemSales = {
-    veg:0,
-    chickenTandoori:0,
-    meat:0,
-    chaat:0,
-    morchaHandesh:0,
-    cinnamonHandesh:0,
-    chocolateFob:0
-};
+let itemsSold =
+JSON.parse(localStorage.getItem('itemsSold')) || {};
 
-function changeQty(item, amount){
-    let element = document.getElementById(item);
-    let qty = parseInt(element.textContent);
-    qty += amount;
+function saveMenu(){
+    localStorage.setItem(
+        'menuItems',
+        JSON.stringify(menuItems)
+    );
+}
 
-    if(qty < 0){
-        qty = 0;
-    }
+function renderMenu(){
 
-    element.textContent = qty;
+    const container =
+    document.getElementById('menuContainer');
+
+    container.innerHTML='';
+
+    menuItems.forEach((item,index)=>{
+
+        if(!currentOrder[item.name]){
+            currentOrder[item.name]=0;
+        }
+
+        const row=document.createElement('div');
+        row.className='menu-item';
+
+        row.innerHTML=`
+            <div>
+                <strong>${item.name}</strong><br>
+                £${item.price.toFixed(2)}
+            </div>
+
+            <div class="qty-controls">
+
+                <button class="minus"
+                    onclick="changeQty('${item.name}',-1)">
+                    -
+                </button>
+
+                <span id="qty-${index}">
+                    ${currentOrder[item.name]}
+                </span>
+
+                <button class="plus"
+                    onclick="changeQty('${item.name}',1)">
+                    +
+                </button>
+
+                <button class="edit-btn"
+                    onclick="editItem(${index})">
+                    Edit
+                </button>
+
+                <button class="delete-btn"
+                    onclick="deleteItem(${index})">
+                    Delete
+                </button>
+
+            </div>
+        `;
+
+        container.appendChild(row);
+
+    });
+
+    updateBreakdown();
     updateTotal();
 }
 
-function getQty(item){
-    return parseInt(document.getElementById(item).textContent);
+function addItem(){
+
+    const name =
+    document.getElementById('newItemName').value.trim();
+
+    const price =
+    parseFloat(
+    document.getElementById('newItemPrice').value);
+
+    if(!name || isNaN(price)){
+        alert("Enter item name and price");
+        return;
+    }
+
+    menuItems.push({
+        name,
+        price
+    });
+
+    saveMenu();
+
+    document.getElementById('newItemName').value='';
+    document.getElementById('newItemPrice').value='';
+
+    renderMenu();
 }
 
-function getOrderTotal(){
-    return (
-        getQty("veg") * prices.veg +
-        getQty("chickenTandoori") * prices.chickenTandoori +
-        getQty("meat") * prices.meat +
-        getQty("chaat") * prices.chaat +
-        getQty("morchaHandesh") * prices.morchaHandesh +
-        getQty("cinnamonHandesh") * prices.cinnamonHandesh +
-        getQty("chocolateFob") * prices.chocolateFob
-    );
+function deleteItem(index){
+
+    if(!confirm('Delete this item?')) return;
+
+    delete currentOrder[menuItems[index].name];
+
+    menuItems.splice(index,1);
+
+    saveMenu();
+
+    renderMenu();
 }
 
-function getOrderCost(){
-    return (
-        getQty("veg") * costs.veg +
-        getQty("chickenTandoori") * costs.chickenTandoori +
-        getQty("meat") * costs.meat +
-        getQty("chaat") * costs.chaat +
-        getQty("morchaHandesh") * costs.morchaHandesh +
-        getQty("cinnamonHandesh") * costs.cinnamonHandesh +
-        getQty("chocolateFob") * costs.chocolateFob
+function editItem(index){
+
+    const newPrice =
+    prompt(
+      "New price (£)",
+      menuItems[index].price
     );
+
+    if(newPrice===null) return;
+
+    menuItems[index].price =
+    parseFloat(newPrice);
+
+    saveMenu();
+
+    renderMenu();
+}
+
+function changeQty(itemName, amount){
+
+    currentOrder[itemName] =
+    Math.max(0,
+    (currentOrder[itemName] || 0)
+    + amount);
+
+    renderMenu();
 }
 
 function updateTotal(){
-    document.getElementById("total").textContent =
-        getOrderTotal().toFixed(2);
+
+    let total=0;
+
+    menuItems.forEach(item=>{
+
+        total +=
+        item.price *
+        (currentOrder[item.name] || 0);
+
+    });
+
+    document.getElementById('orderTotal')
+    .textContent=
+    total.toFixed(2);
 
     calculateChange();
 }
 
 function setPayment(amount){
-    document.getElementById("paymentAmount").value = amount;
+
+    document.getElementById(
+        'paymentAmount'
+    ).value=amount;
+
     calculateChange();
 }
 
 function calculateChange(){
-    let paid =
-        parseFloat(document.getElementById("paymentAmount").value) || 0;
 
-    let total = getOrderTotal();
-    let change = paid - total;
+    const total =
+    parseFloat(
+        document.getElementById(
+            'orderTotal'
+        ).textContent
+    );
 
-    document.getElementById("change").textContent =
-        change.toFixed(2);
+    const paid =
+    parseFloat(
+        document.getElementById(
+            'paymentAmount'
+        ).value
+    ) || 0;
+
+    document.getElementById('change')
+    .textContent=
+    Math.max(0,paid-total)
+    .toFixed(2);
+}
+
+function clearCurrentOrder(){
+
+    currentOrder={};
+
+    renderMenu();
+
+    document.getElementById(
+        'paymentAmount'
+    ).value='';
+
+    document.getElementById(
+        'change'
+    ).textContent='0.00';
 }
 
 function completeSale(){
 
-    let total = getOrderTotal();
+    let orderTotal=
+    parseFloat(
+    document.getElementById(
+        'orderTotal'
+    ).textContent);
 
-    if(total <= 0){
-        alert("Please add items first.");
+    if(orderTotal<=0){
+        alert('No items selected');
         return;
     }
 
-    let paid =
-        parseFloat(document.getElementById("paymentAmount").value) || 0;
+    totalSales++;
+    totalTakings += orderTotal;
 
-    if(paid < total){
-        alert("Customer has not paid enough.");
-        return;
+    for(const item in currentOrder){
+
+        itemsSold[item] =
+        (itemsSold[item] || 0)
+        + currentOrder[item];
+
     }
 
-    let profit = total - getOrderCost();
+    saveSales();
 
-    salesCount++;
-    dailyTakings += total;
-    dailyProfit += profit;
+    updateBreakdown();
 
-    itemSales.veg += getQty("veg");
-    itemSales.chickenTandoori += getQty("chickenTandoori");
-    itemSales.meat += getQty("meat");
-    itemSales.chaat += getQty("chaat");
-    itemSales.morchaHandesh += getQty("morchaHandesh");
-    itemSales.cinnamonHandesh += getQty("cinnamonHandesh");
-    itemSales.chocolateFob += getQty("chocolateFob");
-
-    updateSummary();
-    saveData();
-
-    alert("Sale Completed!");
-
-    resetOrder();
+    clearCurrentOrder();
 }
 
-function updateSummary(){
+function saveSales(){
 
-    document.getElementById("salesCount").textContent =
-        salesCount;
+    localStorage.setItem(
+        'totalSales',
+        totalSales
+    );
 
-    document.getElementById("dailyTakings").textContent =
-        dailyTakings.toFixed(2);
+    localStorage.setItem(
+        'totalTakings',
+        totalTakings
+    );
 
-    document.getElementById("vegSold").textContent =
-        itemSales.veg;
-
-    document.getElementById("chickenTandooriSold").textContent =
-        itemSales.chickenTandoori;
-
-    document.getElementById("meatSold").textContent =
-        itemSales.meat;
-
-    document.getElementById("chaatSold").textContent =
-        itemSales.chaat;
-
-    document.getElementById("morchaHandeshSold").textContent =
-        itemSales.morchaHandesh;
-
-    document.getElementById("cinnamonHandeshSold").textContent =
-        itemSales.cinnamonHandesh;
-
-    document.getElementById("chocolateFobSold").textContent =
-        itemSales.chocolateFob;
+    localStorage.setItem(
+        'itemsSold',
+        JSON.stringify(itemsSold)
+    );
 }
 
-function resetOrder(){
+function updateBreakdown(){
 
-    document.getElementById("veg").textContent = 0;
-    document.getElementById("chickenTandoori").textContent = 0;
-    document.getElementById("meat").textContent = 0;
-    document.getElementById("chaat").textContent = 0;
-    document.getElementById("morchaHandesh").textContent = 0;
-    document.getElementById("cinnamonHandesh").textContent = 0;
-    document.getElementById("chocolateFob").textContent = 0;
+    document.getElementById('salesCount')
+    .textContent=totalSales;
 
-    document.getElementById("paymentAmount").value = "";
-    document.getElementById("total").textContent = "0.00";
-    document.getElementById("change").textContent = "0.00";
+    document.getElementById('totalTakings')
+    .textContent=
+    totalTakings.toFixed(2);
+
+    const breakdown=
+    document.getElementById(
+        'salesBreakdown'
+    );
+
+    breakdown.innerHTML='';
+
+    menuItems.forEach(item=>{
+
+        const sold=
+        itemsSold[item.name] || 0;
+
+        breakdown.innerHTML += `
+            <div class="item-sales">
+                ${item.name}: ${sold}
+            </div>
+        `;
+    });
+}
+
+function exportReport(){
+
+    let report =
+`Banessas Kitchen Event Sales Report
+
+Total Sales: ${totalSales}
+Total Takings: £${totalTakings.toFixed(2)}
+
+Items Sold
+
+`;
+
+    for(const item in itemsSold){
+
+        report +=
+`${item}: ${itemsSold[item]}
+`;
+
+    }
+
+    const blob =
+    new Blob([report],
+    {type:'text/plain'});
+
+    const a=
+    document.createElement('a');
+
+    a.href=
+    URL.createObjectURL(blob);
+
+    a.download=
+    'sales-report.txt';
+
+    a.click();
 }
 
 function resetDailyTotals(){
 
-    if(confirm("Reset all daily totals?")){
+    if(!confirm(
+      'Reset all daily totals?'
+    )) return;
 
-        salesCount = 0;
-        dailyTakings = 0;
-        dailyProfit = 0;
+    totalSales=0;
+    totalTakings=0;
+    itemsSold={};
 
-        itemSales = {
-            veg:0,
-            chickenTandoori:0,
-            meat:0,
-            chaat:0,
-            morchaHandesh:0,
-            cinnamonHandesh:0,
-            chocolateFob:0
-        };
+    saveSales();
 
-        updateSummary();
-        saveData();
-    }
+    updateBreakdown();
 }
 
-function saveData(){
-
-    localStorage.setItem(
-        "samosaData",
-        JSON.stringify({
-            salesCount,
-            dailyTakings,
-            dailyProfit,
-            itemSales
-        })
-    );
-}
-
-function loadData(){
-
-    let data =
-        JSON.parse(localStorage.getItem("samosaData"));
-
-    if(data){
-
-        salesCount = data.salesCount || 0;
-        dailyTakings = data.dailyTakings || 0;
-        dailyProfit = data.dailyProfit || 0;
-
-        itemSales = data.itemSales || {
-            veg:0,
-            chickenTandoori:0,
-            meat:0,
-            chaat:0,
-            morchaHandesh:0,
-            cinnamonHandesh:0,
-            chocolateFob:0
-        };
-
-        updateSummary();
-    }
-}
-
-function exportSalesReport(){
-
-    const date =
-        new Date().toLocaleString();
-
-    let csv =
-`Banessas Kitchen Sales Report
-
-Report Generated,${date}
-
-Total Sales,${salesCount}
-Total Takings,£${dailyTakings.toFixed(2)}
-
-Item,Quantity Sold
-Veg Samosa,${itemSales.veg}
-Bitesize Chicken Tandoori Samosa,${itemSales.chickenTandoori}
-Meat Samosa,${itemSales.meat}
-Samosa Chaat,${itemSales.chaat}
-Morcha Handesh,${itemSales.morchaHandesh}
-Cinnamon Handesh,${itemSales.cinnamonHandesh}
-Chocolate Fob,${itemSales.chocolateFob}
-`;
-
-    const blob =
-        new Blob([csv], {
-            type:"text/csv;charset=utf-8;"
-        });
-
-    const link =
-        document.createElement("a");
-
-    const url =
-        URL.createObjectURL(blob);
-
-    link.href = url;
-    link.download =
-        "BanessasKitchenSalesReport.csv";
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
-  
-window.onload = loadData;
+renderMenu();
 
 </script>
 
